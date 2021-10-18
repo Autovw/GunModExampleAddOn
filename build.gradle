@@ -17,8 +17,8 @@ apply plugin: 'maven-publish'
 
 // You can change the mod and mc version inside the gradle.properties file.
 version = project.mod_version + '-' + project.mc_version
-group = 'com.yourname.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'modid'
+group = 'com.' + project.mod_author + '.' + project.mod_id
+archivesBaseName = project.mod_id
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
@@ -58,7 +58,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                mod_id {
                     source sourceSets.main
                 }
             }
@@ -82,7 +82,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                mod_id {
                     source sourceSets.main
                 }
             }
@@ -106,10 +106,10 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                examplemod {
+                mod_id {
                     source sourceSets.main
                 }
             }
@@ -127,33 +127,26 @@ repositories{
 }
 
 dependencies {
-    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
-    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
-    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.0'
+    // Update dependencies in the gradle.properties file, not here!
+    minecraft 'net.minecraftforge:forge:' + project.forge_version
 
-    // Gun Mod 1.0.1, required
-    implementation fg.deobf('curse.maven:cgm-289479:3224957')
-    // Obfuscate 0.6.2, required
-    runtimeOnly fg.deobf('curse.maven:obfuscate-289380:3336021')
+    implementation fg.deobf('curse.maven:cgm-289479:' + project.gunmod_version)
+    runtimeOnly fg.deobf('curse.maven:obfuscate-289380:' + project.obfuscate_version)
 
-    // Catalogue 1.3.0, optional
-    runtimeOnly fg.deobf('curse.maven:catalogue-459701:3399554')
-    // Configured 1.2.0, optional
-    runtimeOnly fg.deobf('curse.maven:configured-457570:3434071')
+    runtimeOnly fg.deobf('curse.maven:catalogue-459701:' + project.catalogue_version)
+    runtimeOnly fg.deobf('curse.maven:configured-457570:' + project.configured_version)
 
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-            "Specification-Title": "examplemod",
-            "Specification-Vendor": "examplemodsareus",
+            "Specification-Title": project.mod_id,
+            "Specification-Vendor": project.mod_author,
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
             "Implementation-Version": project.mod_version,
-            "Implementation-Vendor" :"examplemodsareus",
+            "Implementation-Vendor" : project.mod_author,
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
